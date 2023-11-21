@@ -15,7 +15,7 @@ const App = () => {
 
     try {
       // Replace with your Azure subscription key and endpoint URL
-      const subscriptionKey = '0e12443a7c904f64a90e926d92762fef';
+      const subscriptionKey = '4a15ebc1cd98414f8dfd403f94163bb2';
       const endpoint = 'https://aiimages.cognitiveservices.azure.com/';
 
       const result = await analyzeImage(imageUrl, subscriptionKey, endpoint);
