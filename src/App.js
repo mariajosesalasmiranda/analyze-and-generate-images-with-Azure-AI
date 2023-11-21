@@ -1,42 +1,59 @@
+// App.js
+
 import React, { useState } from 'react';
+import analyzeImage from './azure-image-analysis';
 
-function App() {
+const App = () => {
   const [imageUrl, setImageUrl] = useState('');
-  const [promptText, setPromptText] = useState('');
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const [processing, setProcessing] = useState(false);
 
-  const handleImageUrlChange = (event) => {
-    setImageUrl(event.target.value);
+  const handleAnalyze = async () => {
+    if (!imageUrl) return;
+
+    setProcessing(true);
+
+    try {
+      // Replace with your Azure subscription key and endpoint URL
+      const subscriptionKey = 'a9a4c496f62a4b03b4576b870bc6c764';
+      const endpoint = 'https://aiimages.cognitiveservices.azure.com/';
+
+      const result = await analyzeImage(imageUrl, subscriptionKey, endpoint);
+      setAnalysisResult(result);
+    } catch (error) {
+      // Handle error
+    } finally {
+      setProcessing(false);
+    }
   };
 
-  const handlePromptTextChange = (event) => {
-    setPromptText(event.target.value);
-  };
+  const displayResults = () => {
+    if (!analysisResult) return null;
 
-  const handleImageAnalysis = () => {
-    // Add code to trigger image analysis (will be implemented later)
-    console.log('Image analysis triggered');
-  };
-
-  const handleImageGeneration = () => {
-    // Add code to trigger image generation (will be implemented later)
-    console.log('Image generation triggered');
+    // Display analysis results in a readable format
+    return (
+      <div>
+        <p>Processed Image URL: {imageUrl}</p>
+        <pre>{JSON.stringify(analysisResult, null, 2)}</pre>
+      </div>
+    );
   };
 
   return (
-    <div className="App">
-      <h1>Title</h1>
+    <div>
       <input
         type="text"
-        placeholder="Enter image URL or prompt text"
         value={imageUrl}
-        onChange={handleImageUrlChange}
+        onChange={(e) => setImageUrl(e.target.value)}
+        placeholder="Enter image URL"
       />
-      <br />
-      <button onClick={handleImageAnalysis}>Image Analysis</button>
-      <button onClick={handleImageGeneration}>Image Generation</button>
+      <button onClick={handleAnalyze} disabled={processing}>
+        Analyze
+      </button>
+      {processing && <p>Processing...</p>}
+      {displayResults()}
     </div>
   );
-}
+};
 
 export default App;
-
