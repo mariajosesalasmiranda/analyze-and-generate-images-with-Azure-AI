@@ -21,7 +21,7 @@ const App = () => {
       const result = await analyzeImage(imageUrl, subscriptionKey, endpoint);
       setAnalysisResult(result);
     } catch (error) {
-      // Handle error
+      console.error('Error analyzing image:', error); 
     } finally {
       setProcessing(false);
     }
