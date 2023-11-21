@@ -12,8 +12,8 @@ const App = () => {
     setProcessing(true);
 
     try {
-      const subscriptionKey = '4a15ebc1cd98414f8dfd403f94163bb2';
-      const endpoint = 'https://aiimages.cognitiveservices.azure.com/';
+      const subscriptionKey = '';
+      const endpoint = 'https://';
 
       const result = await analyzeImage(imageUrl, subscriptionKey, endpoint);
       setAnalysisResult(result);
