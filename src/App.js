@@ -21,8 +21,24 @@ const App = () => {
   };
 
   const displayResults = () => {
-    // Implement a function to display the results in a readable format
-    // Include the URL of the processed image along with analysis results
+    return (
+      <div>
+        <h2>Analysis Results</h2>
+        <p>Processed Image URL: {imageUrl}</p>
+        <h3>Analysis Details:</h3>
+        {/* Displaying analysis results */}
+        {analysisResult && (
+          <div>
+            {/* Format and display analysis results here */}
+            {/* This is a simple example; you might need to customize it */}
+            <p>Description: {analysisResult.description.captions[0].text}</p>
+            <p>Tags: {analysisResult.tags.map((tag) => tag.name).join(', ')}</p>
+            {/* Add more details based on your selected features */}
+          </div>
+        )}
+      </div>
+    );
+  };
   };
 
   return (
