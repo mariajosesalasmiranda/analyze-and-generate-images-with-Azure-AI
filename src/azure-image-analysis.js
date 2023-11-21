@@ -1,17 +1,34 @@
-import axios from 'axios';
-
-const analyzeImage = async (imageUrl) => {
-  try {
-    const response = await axios.get(`https://westus2.api.cognitive.microsoft.com/vision/v4.0/analyze?visualFeatures=Categories,Description,Tags&url=${imageUrl}`, {
-      headers: {
-        'Ocp-Apim-Subscription-Key': '<your-api-key>'
-      }
+const analyzeImage = async (imageUrl, subscriptionKey, endpoint) => {
+    const params = {
+      visualFeatures: 'Categories,Description,Color', 
+      details: '', 
+      language: 'en' 
+    };
+  
+    const url = `${endpoint}/vision/v4.0/analyze?visualFeatures=${params.visualFeatures}&details=${params.details}&language=${params.language}`;
+  
+    const headers = new Headers({
+      'Content-Type': 'application/json',
+      'Ocp-Apim-Subscription-Key': subscriptionKey
     });
-    return response.data;
-  } catch (error) {
-    console.error('Error analyzing image:', error);
-    return null;
-  }
-};
-
-export default analyzeImage;
+  
+    const body = JSON.stringify({ url: imageUrl });
+  
+    const requestOptions = {
+      method: 'POST',
+      headers: headers,
+      body: body
+    };
+  
+    try {
+      const response = await fetch(url, requestOptions);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error analyzing image:', error);
+      throw error;
+    }
+  };
+  
+  export default analyzeImage;
+  

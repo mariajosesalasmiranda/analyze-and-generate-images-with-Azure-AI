@@ -1,73 +1,54 @@
 import React, { useState } from 'react';
 import analyzeImage from './azure-image-analysis';
 
-// Simple GUI
-function App() {
-  const [imageUrl, setImageUrl] = useState('');
-  const [imagePrompt, setImagePrompt] = useState('');
-
-  const handleImageUrlChange = (event) => {
-    setImageUrl(event.target.value);
-  };
-
-  const handleImagePromptChange = (event) => {
-    setImagePrompt(event.target.value);
-  };
-
-  return (
-    <div className="App">
-      <h1>Image Analysis and Generation</h1>
-      <div className="input-container">
-        <label for="imageUrl">Enter Image URL:</label>
-        <input type="text" id="imageUrl" value={imageUrl} onChange={handleImageUrlChange} />
-      </div>
-      <div className="input-container">
-        <label for="imagePrompt">Enter Image Prompt:</label>
-        <textarea id="imagePrompt" value={imagePrompt} onChange={handleImagePromptChange} rows="5"></textarea>
-      </div>
-      <div className="button-container">
-        <button onClick={() => console.log('Analyzing image...')}>Analyze Image</button>
-        <button onClick={() => console.log('Generating image...')}>Generate Image</button>
-      </div>
-    </div>
-  );
-}
-
-// Analyze an image
 const App = () => {
   const [imageUrl, setImageUrl] = useState('');
+  const [analysisResult, setAnalysisResult] = useState(null);
   const [processing, setProcessing] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState(null);
 
-  const handleAnalyzeImage = async () => {
+  const handleAnalyze = async () => {
+    if (!imageUrl) return;
+
     setProcessing(true);
-    const results = await analyzeImage(imageUrl);
-    setProcessing(false);
-    setAnalysisResults(results);
+
+    try {
+      const subscriptionKey = '4a15ebc1cd98414f8dfd403f94163bb2';
+      const endpoint = 'https://aiimages.cognitiveservices.azure.com/';
+
+      const result = await analyzeImage(imageUrl, subscriptionKey, endpoint);
+      setAnalysisResult(result);
+    } catch (error) {
+      // Handle error
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const displayResults = () => {
-    if (!analysisResults) {
-      return <div>No analysis results yet.</div>;
-    }
+    if (!analysisResult) return null;
 
-    const { categories, description, tags } = analysisResults;
+    // Display analysis results in a readable format
     return (
       <div>
-        <p>Image URL: {imageUrl}</p>
-        <p>Categories: {categories.join(', ')}</p>
-        <p>Description: {description}</p>
-        <p>Tags: {tags.join(', ')}</p>
+        <p>Processed Image URL: {imageUrl}</p>
+        <pre>{JSON.stringify(analysisResult, null, 2)}</pre>
       </div>
     );
   };
 
   return (
     <div>
-      <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
-      <button onClick={handleAnalyzeImage} disabled={processing}>Analyze</button>
-      {processing && <div>Analyzing image...</div>}
-      {analysisResults && displayResults()}
+      <input
+        type="text"
+        value={imageUrl}
+        onChange={(e) => setImageUrl(e.target.value)}
+        placeholder="Enter image URL"
+      />
+      <button onClick={handleAnalyze} disabled={processing}>
+        Analyze
+      </button>
+      {processing && <p>Processing...</p>}
+      {displayResults()}
     </div>
   );
 };
