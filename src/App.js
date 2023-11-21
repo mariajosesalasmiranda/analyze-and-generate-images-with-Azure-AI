@@ -1,57 +1,41 @@
 // App.js
 
 import React, { useState } from 'react';
-import analyzeImage from './azure-image-analysis';
+import analyzeImage from './azure-image-analysis.js';
 
 const App = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [analysisResult, setAnalysisResult] = useState(null);
   const [processing, setProcessing] = useState(false);
 
-  const handleAnalyze = async () => {
-    if (!imageUrl) return;
-
+  const handleAnalyzeClick = async () => {
     setProcessing(true);
-
     try {
-      // Replace with your Azure subscription key and endpoint URL
-      const subscriptionKey = '4a15ebc1cd98414f8dfd403f94163bb2';
-      const endpoint = 'https://aiimages.cognitiveservices.azure.com/';
-
-      const result = await analyzeImage(imageUrl, subscriptionKey, endpoint);
+      const result = await analyzeImage(imageUrl);
       setAnalysisResult(result);
     } catch (error) {
-      console.error('Error analyzing image:', error); 
-    } finally {
-      setProcessing(false);
+      console.error(error);
+      setAnalysisResult(null);
     }
+    setProcessing(false);
   };
 
   const displayResults = () => {
-    if (!analysisResult) return null;
-
-    // Display analysis results in a readable format
-    return (
-      <div>
-        <p>Processed Image URL: {imageUrl}</p>
-        <pre>{JSON.stringify(analysisResult, null, 2)}</pre>
-      </div>
-    );
+    // Implement a function to display the results in a readable format
+    // Include the URL of the processed image along with analysis results
   };
 
   return (
     <div>
       <input
         type="text"
+        placeholder="Enter image URL"
         value={imageUrl}
         onChange={(e) => setImageUrl(e.target.value)}
-        placeholder="Enter image URL"
       />
-      <button onClick={handleAnalyze} disabled={processing}>
-        Analyze
-      </button>
+      <button onClick={handleAnalyzeClick}>Analyze</button>
       {processing && <p>Processing...</p>}
-      {displayResults()}
+      {analysisResult && displayResults()}
     </div>
   );
 };
