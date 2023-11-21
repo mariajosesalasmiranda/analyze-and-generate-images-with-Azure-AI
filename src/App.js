@@ -1,57 +1,40 @@
-// App.js
-
 import React, { useState } from 'react';
-import analyzeImage from './azure-image-analysis.js';
+import analyzeImage from './azure-image-analysis';
 
 const App = () => {
   const [imageUrl, setImageUrl] = useState('');
-  const [analysisResult, setAnalysisResult] = useState(null);
   const [processing, setProcessing] = useState(false);
+  const [analysisResults, setAnalysisResults] = useState(null);
 
-  const handleAnalyzeClick = async () => {
+  const handleAnalyzeImage = async () => {
     setProcessing(true);
-    try {
-      const result = await analyzeImage(imageUrl);
-      setAnalysisResult(result);
-    } catch (error) {
-      console.error(error);
-      setAnalysisResult(null);
-    }
+    const results = await analyzeImage(imageUrl);
     setProcessing(false);
+    setAnalysisResults(results);
   };
 
   const displayResults = () => {
+    if (!analysisResults) {
+      return <div>No analysis results yet.</div>;
+    }
+
+    const { categories, description, tags } = analysisResults;
     return (
       <div>
-        <h2>Analysis Results</h2>
-        <p>Processed Image URL: {imageUrl}</p>
-        <h3>Analysis Details:</h3>
-        {/* Displaying analysis results */}
-        {analysisResult && (
-          <div>
-            {/* Format and display analysis results here */}
-            {/* This is a simple example; you might need to customize it */}
-            <p>Description: {analysisResult.description.captions[0].text}</p>
-            <p>Tags: {analysisResult.tags.map((tag) => tag.name).join(', ')}</p>
-            {/* Add more details based on your selected features */}
-          </div>
-        )}
+        <p>Image URL: {imageUrl}</p>
+        <p>Categories: {categories.join(', ')}</p>
+        <p>Description: {description}</p>
+        <p>Tags: {tags.join(', ')}</p>
       </div>
     );
-  };
   };
 
   return (
     <div>
-      <input
-        type="text"
-        placeholder="Enter image URL"
-        value={imageUrl}
-        onChange={(e) => setImageUrl(e.target.value)}
-      />
-      <button onClick={handleAnalyzeClick}>Analyze</button>
-      {processing && <p>Processing...</p>}
-      {analysisResult && displayResults()}
+      <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+      <button onClick={handleAnalyzeImage} disabled={processing}>Analyze</button>
+      {processing && <div>Analyzing image...</div>}
+      {analysisResults && displayResults()}
     </div>
   );
 };
